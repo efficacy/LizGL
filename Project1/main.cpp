@@ -18,8 +18,8 @@ int main() {
 	glfwMakeContextCurrent(window);
 
 	while (!glfwWindowShouldClose(window)) {
-		glViewport(0, 0, w, h);             //Set Viewport to full screen
-		glClear(GL_COLOR_BUFFER_BIT);
+		glViewport(0, 0, w, h); //Set Viewport to whole window
+		glClearColor(1, 1, 1, 1); // background to opaque white
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//put drawing code in here
