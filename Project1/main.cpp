@@ -53,13 +53,26 @@ int teardown(GLFWwindow *window) {
 	return 0;
 }
 
-struct shape {
-	const char* name;
-	GLfloat vertices[];
+struct Position {
+	GLfloat x;
+	GLfloat y;
+};
+
+struct Colour {
+	GLfloat r;
+	GLfloat g;
+	GLfloat b;
+};
+
+struct Vertex {
+	Position pos;
+	Colour col;
 };
 
 int main() {
 	GLFWwindow *window = setup(640, 480);
+
+	printf("sizeof(Poition)=%d, 3 x sizeof(GLfloat)=%d\n", sizeof(Position), (3 * sizeof(GLfloat)));
 
 	//	GLuint shaderProgram = initShader("vert.glsl", "frag.glsl");
 	GLuint shaderProgram = initShader("vert_simple.glsl", "frag_simple.glsl");
@@ -83,10 +96,10 @@ int main() {
 	glBufferData(GL_ARRAY_BUFFER, sizeof(shape), shape, GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(positionID);  // set attribute index of the position attribute to 0 in the vertex shader
-	glVertexAttribPointer(positionID, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
+	glVertexAttribPointer(positionID, sizeof(Position)/ sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
 
 	glEnableVertexAttribArray(colorID);
-	glVertexAttribPointer(colorID, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat)));
+	glVertexAttribPointer(colorID, sizeof(Colour) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)sizeof(Position));
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
