@@ -113,6 +113,11 @@ int main() {
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+	const float total = 0.5;
+	const int steps = 5000;
+	int step = 0;
+	int direction = 1;
+
 	while (!glfwWindowShouldClose(window)) {
 		int width, height;
 		glfwGetWindowSize(window, &width, &height);
@@ -126,8 +131,14 @@ int main() {
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
 
+		if (step > steps || step < 0) {
+			direction = -direction;
+		}
+		step += direction;
+
+		float dist = total * step / steps;
 		//set tranlation matrix in shader to move 0.5 right
-		glm::mat4 tansform = glm::translate(glm::mat4(), glm::vec3(0.5f, 0.0f, 0.0f));
+		glm::mat4 tansform = glm::translate(glm::mat4(), glm::vec3(dist, 0.0f, 0.0f));
 		glUniformMatrix4fv(txID, 1, GL_FALSE, glm::value_ptr(tansform));
 
 		//Draw Triangle
