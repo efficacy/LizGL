@@ -17,6 +17,24 @@ int main() {
 	}
 	glfwMakeContextCurrent(window);
 
+	glewExperimental = true; // enable modern OpenGL support
+	GLenum glewError = glewInit();
+	if (glewError != GLEW_OK) {
+		printf("glew init error\n%s\n", glewGetErrorString(glewError));
+		exit(EXIT_FAILURE);
+	}
+
+	// Get OpenGL Version String and GLSL Version string
+	const GLubyte * opengl_version = glGetString(GL_VERSION);
+	printf("Open GL Graphics Driver version: %s\n", opengl_version);
+	const GLubyte * glsl_version = glGetString(GL_SHADING_LANGUAGE_VERSION);
+	printf("GLSL Version: %s\n", glsl_version);
+
+	if (!GLEW_VERSION_2_1) {
+		printf("Modern OpenGL not supported!\n");
+		exit(EXIT_FAILURE);
+	}
+
 	while (!glfwWindowShouldClose(window)) {
 		glViewport(0, 0, w, h); //Set Viewport to whole window
 		glClearColor(1, 1, 1, 1); // background to opaque white
