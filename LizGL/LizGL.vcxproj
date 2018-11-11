@@ -123,6 +123,8 @@
   <ItemGroup>
     <None Include="..\code\frag.glsl" />
     <None Include="..\code\vert.glsl" />
+    <None Include="frag_simple.glsl" />
+    <None Include="vert_simple.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\code\shader.cpp" />

@@ -21,6 +21,12 @@
     <None Include="..\code\vert.glsl">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="frag_simple.glsl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="vert_simple.glsl">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\code\shader.cpp">
