@@ -68,9 +68,9 @@ int main() {
 	glUseProgram(0);
 
 	GLfloat shape[] = {
-		-0.5f,   0.5f,  0.0f,  1.0f, 0.0f, 0.0f, // Left 
-		-0.5f,  -0.5f,  0.0f,  1.0f, 0.0f, 0.0f, // Right
-		0.0f,   0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // Top 
+		-0.5f,   0.5f,  1.0f, 0.0f, 0.0f, // Left
+		-0.5f,  -0.5f,  1.0f, 0.0f, 0.0f, // Right
+		 0.0f,   0.0f,  1.0f, 0.0f, 0.0f, // Top
 	};
 
 	GLuint VBO, VAO;
@@ -82,11 +82,11 @@ int main() {
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(shape), shape, GL_STATIC_DRAW);
 
-	glEnableVertexAttribArray(0);  // set attribute index of the position attribute to 0 in the vertex shader
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);	// Vertex attributes stay the same, note that the stride is 6*sizeof(GLloat)			
+	glEnableVertexAttribArray(positionID);  // set attribute index of the position attribute to 0 in the vertex shader
+	glVertexAttribPointer(positionID, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
 
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat))); // Color attribute
+	glEnableVertexAttribArray(colorID);
+	glVertexAttribPointer(colorID, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat)));
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
