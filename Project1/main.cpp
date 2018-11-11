@@ -69,6 +69,8 @@ struct Vertex {
 	Colour col;
 };
 
+#define RED {1.0f, 0.0f, 0.0f}
+
 int main() {
 	GLFWwindow *window = setup(640, 480);
 
@@ -80,10 +82,10 @@ int main() {
 	GLuint colorID = glGetAttribLocation(shaderProgram, "color");
 	glUseProgram(0);
 
-	GLfloat shape[] = {
-		-0.5f,   0.5f,  1.0f, 0.0f, 0.0f, // Left
-		-0.5f,  -0.5f,  1.0f, 0.0f, 0.0f, // Right
-		 0.0f,   0.0f,  1.0f, 0.0f, 0.0f, // Top
+	Vertex shape[] = {
+		{{-0.5f,  0.5f}, RED }, // Left
+		{{-0.5f, -0.5f}, RED}, // Right
+		{{ 0.0f,  0.0f}, RED}, // Top
 	};
 
 	GLuint VBO, VAO;
