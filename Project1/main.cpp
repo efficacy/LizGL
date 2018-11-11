@@ -113,7 +113,7 @@ int main() {
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	const float total = 0.5;
+	const glm::vec3 move = glm::vec3(0.5,-0.5f, 0.0f);
 	const int steps = 5000;
 	int step = 0;
 	int direction = 1;
@@ -127,18 +127,20 @@ int main() {
 		glClearColor(1, 1, 1, 1); // background to opaque white
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		//put drawing code in here
-		glUseProgram(shaderProgram);
-		glBindVertexArray(VAO);
-
+		// example frame-based animation. Could easily look up rather than calculate this stuff
 		if (step > steps || step < 0) {
 			direction = -direction;
 		}
 		step += direction;
 
-		float dist = total * step / steps;
+		glUseProgram(shaderProgram);
+		glBindVertexArray(VAO);
+
+		float dist = step / (float)steps;
+//		printf("step=%d, dist=%f\n", step, dist);
+		glm::vec3 part = move * dist;
 		//set tranlation matrix in shader to move 0.5 right
-		glm::mat4 tansform = glm::translate(glm::mat4(), glm::vec3(dist, 0.0f, 0.0f));
+		glm::mat4 tansform = glm::translate(glm::mat4(), part);
 		glUniformMatrix4fv(txID, 1, GL_FALSE, glm::value_ptr(tansform));
 
 		//Draw Triangle
@@ -147,7 +149,6 @@ int main() {
 		//Unbind Vertex Array Object and Shader
 		glBindVertexArray(0);
 		glUseProgram(0);
-
 
 		// leave this at the end
 		glfwSwapBuffers(window);                //<-- SWAP BUFFERS
