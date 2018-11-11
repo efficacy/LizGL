@@ -4,11 +4,9 @@
 #include "GLFW/glfw3.h"
 #include <iostream>
 
-int main() {
-
+GLFWwindow *setup(const int w, const int h) {
 	if (!glfwInit()) exit(EXIT_FAILURE);
 
-	const int w = 640; const int h = 640;
 	GLFWwindow *window = glfwCreateWindow(w, h, "glfw", NULL, NULL);
 
 	if (!window) {
@@ -32,11 +30,28 @@ int main() {
 
 	if (!GLEW_VERSION_2_1) {
 		printf("Modern OpenGL not supported!\n");
-		exit(EXIT_FAILURE);
+		 exit(EXIT_FAILURE);
 	}
 
+	return window;
+}
+
+int teardown(GLFWwindow *window) {
+	//Destroy window and terminate glfw
+	glfwDestroyWindow(window);
+	glfwTerminate();
+	return 0;
+}
+
+int main() {
+	GLFWwindow *window = setup(640, 480);
+
 	while (!glfwWindowShouldClose(window)) {
-		glViewport(0, 0, w, h); //Set Viewport to whole window
+		int width, height;
+		glfwGetWindowSize(window, &width, &height);
+		//printf("window reports width %d and heught %d\n", width, height);
+
+		glViewport(0, 0, width, height); //Set Viewport to whole window, even if resized
 		glClearColor(1, 1, 1, 1); // background to opaque white
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -46,10 +61,5 @@ int main() {
 		glfwPollEvents();                       //<-- LISTEN FOR WINDOW EVENTS
 	}
 
-	//Destroy window and terminate glfw
-	glfwDestroyWindow(window);
-	glfwTerminate();
-	printf("goodbye window\n");
-
-	return 0;
+	return teardown(window);
 }
