@@ -1,8 +1,13 @@
-#include <stdlib.h>
+#include <iostream>
 #define GLEW_STATIC
 #include <GL/glew.h>
-#include "GLFW/glfw3.h"
-#include <iostream>
+#include <GLFW/glfw3.h>
+
+// GLM Mathematics
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/matrix_interpolation.hpp>
 
 #include "shader.h"
 
@@ -80,6 +85,8 @@ int main() {
 	GLuint shaderProgram = initShader("vert_simple.glsl", "frag_simple.glsl");
 	GLuint positionID = glGetAttribLocation(shaderProgram, "position");
 	GLuint colorID = glGetAttribLocation(shaderProgram, "color");
+	GLuint txID = glGetUniformLocation(shaderProgram, "transform");
+
 	glUseProgram(0);
 
 	Vertex shape[] = {
@@ -118,6 +125,10 @@ int main() {
 		//put drawing code in here
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
+
+		//set tranlation matrix in shader to move 0.5 right
+		glm::mat4 tansform = glm::translate(glm::mat4(), glm::vec3(0.5f, 0.0f, 0.0f));
+		glUniformMatrix4fv(txID, 1, GL_FALSE, glm::value_ptr(tansform));
 
 		//Draw Triangle
 		glDrawArrays(GL_TRIANGLES, 0, 3);
