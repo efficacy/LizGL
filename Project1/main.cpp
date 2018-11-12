@@ -58,14 +58,14 @@ int teardown(GLFWwindow *window) {
 	return 0;
 }
 
-struct Position {
+struct P {
 	GLfloat x;
 	GLfloat y;
 
-	Position() { x = 0; y = 0; }
-	Position(GLfloat x, GLfloat y) {
-		Position::x = x;
-		Position::y = y;
+	P() { x = 0; y = 0; }
+	P(GLfloat x, GLfloat y) {
+		P::x = x;
+		P::y = y;
 	}
 };
 
@@ -83,11 +83,11 @@ struct Colour {
 };
 
 struct Vertex {
-	Position pos;
+	P pos;
 	Colour col;
 
 	Vertex() {}
-	Vertex(Position p, Colour c) {
+	Vertex(P p, Colour c) {
 		pos = p;
 		col = c;
 	}
@@ -107,7 +107,7 @@ struct Triangle : Shape {
 	virtual int nPoints() { return 3; }
 	virtual Vertex* getPoints() { return points;  }
 
-	Triangle(Colour colour, Position p1, Position p2, Position p3) {
+	Triangle(Colour colour, P p1, P p2, P p3) {
 		points[0] = Vertex(p1, colour);
 		points[1] = Vertex(p2, colour);
 		points[2] = Vertex(p3, colour);
@@ -115,17 +115,31 @@ struct Triangle : Shape {
 };
 
 struct Quadrangle : Shape {
-	Vertex points[4];
-	virtual int nPoints() { return 4; }
+	Vertex points[6];
+	virtual int nPoints() { return 6; }
 	virtual Vertex* getPoints() { return points; }
+
+	Quadrangle(Colour colour, P p1, P p2, P p3, P p4) {
+		points[0] = Vertex(p1, colour);
+		points[1] = Vertex(p2, colour);
+		points[2] = Vertex(p3, colour);
+
+		points[3] = Vertex(p1, colour);
+		points[4] = Vertex(p3, colour);
+		points[5] = Vertex(p4, colour);
+	}
 };
 
 #define RED Colour(1.0f, 0.0f, 0.0f)
 #define GREEN Colour(0.0f, 1.0f, 0.0f)
 #define BLUE Colour(0.0f, 0.0f, 1.0f)
 
+#define YELLOW Colour(1.0f, 1.0f, 0.0f)
+#define CYAN Colour(0.0f, 1.0f, 1.0f)
+#define MAGENTA Colour(1.0f, 0.0f, 1.0f)
+
 int main() {
-	GLFWwindow *window = setup(640, 480);
+	GLFWwindow *window = setup(640, 640);
 
 	//	GLuint shaderProgram = initShader("vert.glsl", "frag.glsl");
 	GLuint shaderProgram = initShader("vert_simple.glsl", "frag_simple.glsl");
@@ -135,10 +149,18 @@ int main() {
 
 	glUseProgram(0);
 
-	Triangle largeTriangleRed = Triangle(RED, Position(-0.5f, 0.5f), Position(-0.5f, -0.5f), Position(0.0f, 0.0f));
-	Triangle largeTriangleBlue = Triangle(BLUE, Position(-0.5f, 0.5f), Position(0.0f, 0.0f), Position(0.5f, 0.5f));
+	Triangle largeTriangleRed = Triangle(RED, P(-0.5f, 0.5f), P(-0.5f, -0.5f), P(0.0f, 0.0f));
+	Triangle largeTriangleBlue = Triangle(BLUE, P(-0.5f, 0.5f), P(0.0f, 0.0f), P(0.5f, 0.5f));
+	Triangle medTriangle = Triangle(MAGENTA, P(0.0f, -0.5f), P(0.5f, -0.5f), P(0.5f, 0.0f));
+	Triangle smallTriangle1 = Triangle(YELLOW, P(0.25f, 0.25f), P(0.5f, 0.0f), P(0.5f, 0.5f));
+	Triangle smallTriangle2 = Triangle(CYAN, P(-0.25f, -0.25f), P(0.25f, -0.25f), P(0.0f, 0.0f));
+	Quadrangle square = Quadrangle(GREEN, P(0.0f, 0.0f), P(0.25f, -0.25), P(0.5f, 0.0f), P(0.25f, 0.25f));
+	//Triangle square1 = Triangle(GREEN, P(0.0f, 0.0f), P(0.25f, -0.25f), P(0.5f, 0.0f));
+	//Triangle square2 = Triangle(GREEN, P(0.0f, 0.0f), P(0.5f, 0.0f), P(0.25f, 0.25f));
 
-	Shape* shapes[] = { &largeTriangleRed, &largeTriangleBlue };
+
+	Shape* shapes[] = { &largeTriangleRed, &largeTriangleBlue, &medTriangle, &smallTriangle1, &smallTriangle2, &square };
+
 	for (int si = 0; si < sizeof(shapes) / sizeof(Shape*); ++si) {
 		Shape* s = shapes[si];
 
@@ -150,11 +172,11 @@ int main() {
 		glBindBuffer(GL_ARRAY_BUFFER, s->VBO);
 		glBufferData(GL_ARRAY_BUFFER, s->size(), s->getPoints(), GL_STATIC_DRAW);
 
-		glEnableVertexAttribArray(positionID);  // set attribute index of the position attribute to 0 in the vertex shader
-		glVertexAttribPointer(positionID, sizeof(Position) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
+		glEnableVertexAttribArray(positionID);  // set attribute index of the P attribute to 0 in the vertex shader
+		glVertexAttribPointer(positionID, sizeof(P) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
 
 		glEnableVertexAttribArray(colorID);
-		glVertexAttribPointer(colorID, sizeof(Colour) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)sizeof(Position));
+		glVertexAttribPointer(colorID, sizeof(Colour) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)sizeof(P));
 
 		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -193,7 +215,7 @@ int main() {
 			glUniformMatrix4fv(txID, 1, GL_FALSE, glm::value_ptr(tansform));
 
 			//Draw Triangle
-			glDrawArrays(GL_TRIANGLES, 0, 3);
+			glDrawArrays(GL_TRIANGLES, 0, shapes[si]->nPoints());
 
 			//Unbind Vertex Array Object and Shader
 			glBindVertexArray(0);
