@@ -120,12 +120,13 @@ struct Triangle : Shape {
 	}
 };
 
-struct Quadrangle : Shape {
+// fake a quadrilateral out of two triangles
+struct Quad : Shape {
 	Vertex points[6];
 	virtual int nPoints() { return 6; }
 	virtual Vertex* getPoints() { return points; }
 
-	Quadrangle(Colour colour, P p1, P p2, P p3, P p4) {
+	Quad(Colour colour, P p1, P p2, P p3, P p4) {
 		points[0] = Vertex(p1, colour);
 		points[1] = Vertex(p2, colour);
 		points[2] = Vertex(p3, colour);
@@ -149,7 +150,6 @@ struct Quadrangle : Shape {
 int main() {
 	GLFWwindow *window = setup(640, 640);
 
-	//	GLuint shaderProgram = initShader("vert.glsl", "frag.glsl");
 	GLuint shaderProgram = initShader("vert_simple.glsl", "frag_simple.glsl");
 	GLuint positionID = glGetAttribLocation(shaderProgram, "position");
 	GLuint colorID = glGetAttribLocation(shaderProgram, "color");
@@ -163,8 +163,8 @@ int main() {
 	Triangle medTriangle = Triangle(MAGENTA, P(0.0f, -0.5f), P(0.5f, -0.5f), P(0.5f, 0.0f));
 	Triangle smallTriangle1 = Triangle(YELLOW, P(0.25f, 0.25f), P(0.5f, 0.0f), P(0.5f, 0.5f));
 	Triangle smallTriangle2 = Triangle(CYAN, P(-0.25f, -0.25f), P(0.25f, -0.25f), P(0.0f, 0.0f));
-	Quadrangle square = Quadrangle(GREEN, P(0.0f, 0.0f), P(0.25f, -0.25), P(0.5f, 0.0f), P(0.25f, 0.25f));
-	Quadrangle pgram = Quadrangle(BROWN, P(0.0f, -0.5f), P(-0.5f, -0.5f), P(-0.25f, -0.25f), P(0.25f, -0.25f));
+	Quad square = Quad(GREEN, P(0.0f, 0.0f), P(0.25f, -0.25), P(0.5f, 0.0f), P(0.25f, 0.25f));
+	Quad pgram = Quad(BROWN, P(0.0f, -0.5f), P(-0.5f, -0.5f), P(-0.25f, -0.25f), P(0.25f, -0.25f));
 
 	Shape* tangram[] = { &largeTriangleRed, &largeTriangleBlue, &medTriangle, &smallTriangle1, &smallTriangle2, &square, &pgram };
 
