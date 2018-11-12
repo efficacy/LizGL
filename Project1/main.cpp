@@ -136,16 +136,20 @@ int main() {
 	glUseProgram(0);
 
 	Triangle largeTriangleRed = Triangle(RED, Position(-0.5f, 0.5f), Position(-0.5f, -0.5f), Position(0.0f, 0.0f));
+	Triangle largeTriangleBlue = Triangle(BLUE, Position(-0.5f, 0.5f), Position(0.0f, 0.0f), Position(0.5f, 0.5f));
 
-	Shape& s = largeTriangleRed;
+	Shape* shapes[] = { &largeTriangleRed, &largeTriangleBlue };
+	int si = 1;
 
-	glGenVertexArrays(1, &(s.VAO));
-	glBindVertexArray(s.VAO);
+	Shape* s = shapes[si];
 
-	glGenBuffers(1, &(s.VBO));
+	glGenVertexArrays(1, &(s->VAO));
+	glBindVertexArray(s->VAO);
 
-	glBindBuffer(GL_ARRAY_BUFFER,s.VBO);
-	glBufferData(GL_ARRAY_BUFFER, s.size(), s.getPoints(), GL_STATIC_DRAW);
+	glGenBuffers(1, &(s->VBO));
+
+	glBindBuffer(GL_ARRAY_BUFFER,s->VBO);
+	glBufferData(GL_ARRAY_BUFFER, s->size(), s->getPoints(), GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(positionID);  // set attribute index of the position attribute to 0 in the vertex shader
 	glVertexAttribPointer(positionID, sizeof(Position)/ sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
@@ -177,7 +181,7 @@ int main() {
 		step += direction;
 
 		glUseProgram(shaderProgram);
-		glBindVertexArray(largeTriangleRed.VAO);
+		glBindVertexArray(shapes[si]->VAO);
 
 		float dist = step / (float)steps;
 //		printf("step=%d, dist=%f\n", step, dist);
