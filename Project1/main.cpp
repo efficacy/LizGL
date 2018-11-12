@@ -134,20 +134,15 @@ int main() {
 
 	glUseProgram(0);
 
-	Vertex largeTriangleRed[] = {
-		{{-0.5f,  0.5f}, RED }, // Left
-		{{-0.5f, -0.5f}, RED}, // Right
-		{{ 0.0f,  0.0f}, RED}, // Top
-	};
+	Triangle largeTriangleRed = Triangle(RED, Position(-0.5f, 0.5f), Position(-0.5f, -0.5f), Position(0.0f, 0.0f));
 
-	GLuint VBO, VAO;
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
+	glGenVertexArrays(1, &(largeTriangleRed.VAO));
+	glBindVertexArray(largeTriangleRed.VAO);
 
-	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &(largeTriangleRed.VBO));
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(largeTriangleRed), largeTriangleRed, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, largeTriangleRed.VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(largeTriangleRed.points), largeTriangleRed.points, GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(positionID);  // set attribute index of the position attribute to 0 in the vertex shader
 	glVertexAttribPointer(positionID, sizeof(Position)/ sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
@@ -179,7 +174,7 @@ int main() {
 		step += direction;
 
 		glUseProgram(shaderProgram);
-		glBindVertexArray(VAO);
+		glBindVertexArray(largeTriangleRed.VAO);
 
 		float dist = step / (float)steps;
 //		printf("step=%d, dist=%f\n", step, dist);
