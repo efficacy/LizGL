@@ -182,7 +182,6 @@ int main() {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
-	const glm::vec3 move = glm::vec3(0.5,-0.5f, 0.0f); // example movement vector
 	const int steps = 5000;
 	int step = 0;
 	int direction = 1;
@@ -208,11 +207,13 @@ int main() {
 			glBindVertexArray(tangram[si]->VAO);
 
 			float dist = step / (float)steps;
-			// printf("step=%d, dist=%f\n", step, dist);
-			glm::vec3 part = move * dist;
-			//set tranlation matrix in shader to move 0.5 right
-			glm::mat4 tansform = glm::translate(glm::mat4(), part);
-			glUniformMatrix4fv(txID, 1, GL_FALSE, glm::value_ptr(tansform));
+			//printf("step=%d, dist=%f\n", step, dist);
+
+			const glm::mat4 start = glm::mat4();
+			const glm::mat4 spin = glm::rotate(start, (GLfloat)(dist * 3.14f / 4.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+			const glm::mat4 move = glm::translate(spin, glm::vec3(0.5, -0.5f, 0.0f) * dist);
+			const glm::mat4 tx = move;
+			glUniformMatrix4fv(txID, 1, GL_FALSE, glm::value_ptr(tx));
 
 			//Draw Triangle
 			glDrawArrays(GL_TRIANGLES, 0, tangram[si]->nPoints());
