@@ -61,25 +61,70 @@ int teardown(GLFWwindow *window) {
 struct Position {
 	GLfloat x;
 	GLfloat y;
+
+	Position() { x = 0; y = 0; }
+	Position(GLfloat x, GLfloat y) {
+		Position::x = x;
+		Position::y = y;
+	}
 };
 
 struct Colour {
 	GLfloat r;
 	GLfloat g;
 	GLfloat b;
+
+	Colour() { r = 0.5f; g = 0.5f; b = 0.5f; }
+	Colour(GLfloat r, GLfloat g, GLfloat b) {
+		Colour::r = r;
+		Colour::g = g;
+		Colour::b = b;
+	}
 };
 
 struct Vertex {
 	Position pos;
 	Colour col;
+
+	Vertex() {}
+	Vertex(Position p, Colour c) {
+		pos = p;
+		col = c;
+	}
 };
 
-#define RED {1.0f, 0.0f, 0.0f}
+struct Shape {
+	glm::mat4 transform = glm::mat4();
+	GLuint VBO, VAO;
+
+	virtual int nPoints() = 0;
+	virtual Vertex* getPoints() = 0;
+};
+
+struct Triangle : Shape {
+	Vertex points[3];
+	virtual int nPoints() { return 3; }
+	virtual Vertex* getPoints() { return points;  }
+
+	Triangle(Colour colour, Position p1, Position p2, Position p3) {
+		points[0] = Vertex(p1, colour);
+		points[1] = Vertex(p2, colour);
+		points[2] = Vertex(p3, colour);
+	}
+};
+
+struct Quadrangle : Shape {
+	Vertex points[4];
+	virtual int nPoints() { return 4; }
+	virtual Vertex* getPoints() { return points; }
+};
+
+#define RED Colour(1.0f, 0.0f, 0.0f)
+#define GREEN Colour(0.0f, 1.0f, 0.0f)
+#define BLUE Colour(0.0f, 0.0f, 1.0f)
 
 int main() {
 	GLFWwindow *window = setup(640, 480);
-
-	printf("sizeof(Poition)=%d, 3 x sizeof(GLfloat)=%d\n", sizeof(Position), (3 * sizeof(GLfloat)));
 
 	//	GLuint shaderProgram = initShader("vert.glsl", "frag.glsl");
 	GLuint shaderProgram = initShader("vert_simple.glsl", "frag_simple.glsl");
@@ -89,7 +134,7 @@ int main() {
 
 	glUseProgram(0);
 
-	Vertex shape[] = {
+	Vertex largeTriangleRed[] = {
 		{{-0.5f,  0.5f}, RED }, // Left
 		{{-0.5f, -0.5f}, RED}, // Right
 		{{ 0.0f,  0.0f}, RED}, // Top
@@ -102,7 +147,7 @@ int main() {
 	glGenBuffers(1, &VBO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(shape), shape, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(largeTriangleRed), largeTriangleRed, GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(positionID);  // set attribute index of the position attribute to 0 in the vertex shader
 	glVertexAttribPointer(positionID, sizeof(Position)/ sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
@@ -113,7 +158,7 @@ int main() {
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	const glm::vec3 move = glm::vec3(0.5,-0.5f, 0.0f);
+	const glm::vec3 move = glm::vec3(0.5,-0.5f, 0.0f); // example movement vector
 	const int steps = 5000;
 	int step = 0;
 	int direction = 1;
