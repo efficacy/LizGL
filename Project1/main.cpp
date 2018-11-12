@@ -138,6 +138,8 @@ struct Quadrangle : Shape {
 #define CYAN Colour(0.0f, 1.0f, 1.0f)
 #define MAGENTA Colour(1.0f, 0.0f, 1.0f)
 
+#define BROWN Colour(0.5f, 0.3f, 0.3f)
+
 int main() {
 	GLFWwindow *window = setup(640, 640);
 
@@ -155,14 +157,12 @@ int main() {
 	Triangle smallTriangle1 = Triangle(YELLOW, P(0.25f, 0.25f), P(0.5f, 0.0f), P(0.5f, 0.5f));
 	Triangle smallTriangle2 = Triangle(CYAN, P(-0.25f, -0.25f), P(0.25f, -0.25f), P(0.0f, 0.0f));
 	Quadrangle square = Quadrangle(GREEN, P(0.0f, 0.0f), P(0.25f, -0.25), P(0.5f, 0.0f), P(0.25f, 0.25f));
-	//Triangle square1 = Triangle(GREEN, P(0.0f, 0.0f), P(0.25f, -0.25f), P(0.5f, 0.0f));
-	//Triangle square2 = Triangle(GREEN, P(0.0f, 0.0f), P(0.5f, 0.0f), P(0.25f, 0.25f));
+	Quadrangle pgram = Quadrangle(BROWN, P(0.0f, -0.5f), P(-0.5f, -0.5f), P(-0.25f, -0.25f), P(0.25f, -0.25f));
 
+	Shape* tangram[] = { &largeTriangleRed, &largeTriangleBlue, &medTriangle, &smallTriangle1, &smallTriangle2, &square, &pgram };
 
-	Shape* shapes[] = { &largeTriangleRed, &largeTriangleBlue, &medTriangle, &smallTriangle1, &smallTriangle2, &square };
-
-	for (int si = 0; si < sizeof(shapes) / sizeof(Shape*); ++si) {
-		Shape* s = shapes[si];
+	for (int si = 0; si < sizeof(tangram) / sizeof(Shape*); ++si) {
+		Shape* s = tangram[si];
 
 		glGenVertexArrays(1, &(s->VAO));
 		glBindVertexArray(s->VAO);
@@ -204,8 +204,8 @@ int main() {
 
 		glUseProgram(shaderProgram);
 
-		for (int si = 0; si < sizeof(shapes) / sizeof(Shape*); ++si) {
-			glBindVertexArray(shapes[si]->VAO);
+		for (int si = 0; si < sizeof(tangram) / sizeof(Shape*); ++si) {
+			glBindVertexArray(tangram[si]->VAO);
 
 			float dist = step / (float)steps;
 			// printf("step=%d, dist=%f\n", step, dist);
@@ -215,7 +215,7 @@ int main() {
 			glUniformMatrix4fv(txID, 1, GL_FALSE, glm::value_ptr(tansform));
 
 			//Draw Triangle
-			glDrawArrays(GL_TRIANGLES, 0, shapes[si]->nPoints());
+			glDrawArrays(GL_TRIANGLES, 0, tangram[si]->nPoints());
 
 			//Unbind Vertex Array Object and Shader
 			glBindVertexArray(0);
