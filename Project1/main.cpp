@@ -139,26 +139,26 @@ int main() {
 	Triangle largeTriangleBlue = Triangle(BLUE, Position(-0.5f, 0.5f), Position(0.0f, 0.0f), Position(0.5f, 0.5f));
 
 	Shape* shapes[] = { &largeTriangleRed, &largeTriangleBlue };
-	int si = 1;
+	for (int si = 0; si < sizeof(shapes) / sizeof(Shape*); ++si) {
+		Shape* s = shapes[si];
 
-	Shape* s = shapes[si];
+		glGenVertexArrays(1, &(s->VAO));
+		glBindVertexArray(s->VAO);
 
-	glGenVertexArrays(1, &(s->VAO));
-	glBindVertexArray(s->VAO);
+		glGenBuffers(1, &(s->VBO));
 
-	glGenBuffers(1, &(s->VBO));
+		glBindBuffer(GL_ARRAY_BUFFER, s->VBO);
+		glBufferData(GL_ARRAY_BUFFER, s->size(), s->getPoints(), GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ARRAY_BUFFER,s->VBO);
-	glBufferData(GL_ARRAY_BUFFER, s->size(), s->getPoints(), GL_STATIC_DRAW);
+		glEnableVertexAttribArray(positionID);  // set attribute index of the position attribute to 0 in the vertex shader
+		glVertexAttribPointer(positionID, sizeof(Position) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
 
-	glEnableVertexAttribArray(positionID);  // set attribute index of the position attribute to 0 in the vertex shader
-	glVertexAttribPointer(positionID, sizeof(Position)/ sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
+		glEnableVertexAttribArray(colorID);
+		glVertexAttribPointer(colorID, sizeof(Colour) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)sizeof(Position));
 
-	glEnableVertexAttribArray(colorID);
-	glVertexAttribPointer(colorID, sizeof(Colour) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)sizeof(Position));
-
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
 
 	const glm::vec3 move = glm::vec3(0.5,-0.5f, 0.0f); // example movement vector
 	const int steps = 5000;
@@ -181,20 +181,24 @@ int main() {
 		step += direction;
 
 		glUseProgram(shaderProgram);
-		glBindVertexArray(shapes[si]->VAO);
 
-		float dist = step / (float)steps;
-//		printf("step=%d, dist=%f\n", step, dist);
-		glm::vec3 part = move * dist;
-		//set tranlation matrix in shader to move 0.5 right
-		glm::mat4 tansform = glm::translate(glm::mat4(), part);
-		glUniformMatrix4fv(txID, 1, GL_FALSE, glm::value_ptr(tansform));
+		for (int si = 0; si < sizeof(shapes) / sizeof(Shape*); ++si) {
+			glBindVertexArray(shapes[si]->VAO);
 
-		//Draw Triangle
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+			float dist = step / (float)steps;
+			// printf("step=%d, dist=%f\n", step, dist);
+			glm::vec3 part = move * dist;
+			//set tranlation matrix in shader to move 0.5 right
+			glm::mat4 tansform = glm::translate(glm::mat4(), part);
+			glUniformMatrix4fv(txID, 1, GL_FALSE, glm::value_ptr(tansform));
 
-		//Unbind Vertex Array Object and Shader
-		glBindVertexArray(0);
+			//Draw Triangle
+			glDrawArrays(GL_TRIANGLES, 0, 3);
+
+			//Unbind Vertex Array Object and Shader
+			glBindVertexArray(0);
+		}
+
 		glUseProgram(0);
 
 		// leave this at the end
