@@ -170,6 +170,7 @@ int main() {
 
 	// define how they move to get where we want them
 	largeTriangleRed.setSpin(0.25f); largeTriangleRed.setMove(glm::vec3(0.5, -0.5f, 0.0f));
+	largeTriangleBlue.setMove(glm::vec3(-0.5, 0.5f, 0.0f));
 
 	for (int si = 0; si < sizeof(tangram) / sizeof(Shape*); ++si) {
 		Shape* s = tangram[si];
