@@ -99,6 +99,7 @@ struct Shape {
 
 	virtual int nPoints() = 0;
 	virtual Vertex* getPoints() = 0;
+	int size() { return nPoints() * sizeof(Vertex); }
 };
 
 struct Triangle : Shape {
@@ -136,13 +137,15 @@ int main() {
 
 	Triangle largeTriangleRed = Triangle(RED, Position(-0.5f, 0.5f), Position(-0.5f, -0.5f), Position(0.0f, 0.0f));
 
-	glGenVertexArrays(1, &(largeTriangleRed.VAO));
-	glBindVertexArray(largeTriangleRed.VAO);
+	Shape& s = largeTriangleRed;
 
-	glGenBuffers(1, &(largeTriangleRed.VBO));
+	glGenVertexArrays(1, &(s.VAO));
+	glBindVertexArray(s.VAO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, largeTriangleRed.VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(largeTriangleRed.points), largeTriangleRed.points, GL_STATIC_DRAW);
+	glGenBuffers(1, &(s.VBO));
+
+	glBindBuffer(GL_ARRAY_BUFFER,s.VBO);
+	glBufferData(GL_ARRAY_BUFFER, s.size(), s.getPoints(), GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(positionID);  // set attribute index of the position attribute to 0 in the vertex shader
 	glVertexAttribPointer(positionID, sizeof(Position)/ sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
