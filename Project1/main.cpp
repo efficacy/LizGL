@@ -93,13 +93,19 @@ struct Vertex {
 	}
 };
 
+const GLfloat fullCircle = glm::pi<float>() * 2;
+
 struct Shape {
 	glm::mat4 transform = glm::mat4();
 	GLuint VBO, VAO;
+	GLfloat spin = 0;
+	glm::vec3 move = glm::vec3();
 
 	virtual int nPoints() = 0;
 	virtual Vertex* getPoints() = 0;
 	int size() { return nPoints() * sizeof(Vertex); }
+	void setSpin(GLfloat _spin) { spin = fullCircle * _spin; }
+	void setMove(glm::vec3 _move) { move = _move; }
 };
 
 struct Triangle : Shape {
@@ -151,6 +157,7 @@ int main() {
 
 	glUseProgram(0);
 
+	// define the shapes in their initial tangram locations
 	Triangle largeTriangleRed = Triangle(RED, P(-0.5f, 0.5f), P(-0.5f, -0.5f), P(0.0f, 0.0f));
 	Triangle largeTriangleBlue = Triangle(BLUE, P(-0.5f, 0.5f), P(0.0f, 0.0f), P(0.5f, 0.5f));
 	Triangle medTriangle = Triangle(MAGENTA, P(0.0f, -0.5f), P(0.5f, -0.5f), P(0.5f, 0.0f));
@@ -160,6 +167,9 @@ int main() {
 	Quadrangle pgram = Quadrangle(BROWN, P(0.0f, -0.5f), P(-0.5f, -0.5f), P(-0.25f, -0.25f), P(0.25f, -0.25f));
 
 	Shape* tangram[] = { &largeTriangleRed, &largeTriangleBlue, &medTriangle, &smallTriangle1, &smallTriangle2, &square, &pgram };
+
+	// define how they move to get where we want them
+	largeTriangleRed.setSpin(0.25f); largeTriangleRed.setMove(glm::vec3(0.5, -0.5f, 0.0f));
 
 	for (int si = 0; si < sizeof(tangram) / sizeof(Shape*); ++si) {
 		Shape* s = tangram[si];
@@ -210,8 +220,8 @@ int main() {
 			//printf("step=%d, dist=%f\n", step, dist);
 
 			const glm::mat4 start = glm::mat4();
-			const glm::mat4 spin = glm::rotate(start, (GLfloat)(dist * 3.14f / 4.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-			const glm::mat4 move = glm::translate(spin, glm::vec3(0.5, -0.5f, 0.0f) * dist);
+			const glm::mat4 spin = glm::rotate(start, (GLfloat)(dist * tangram[si]->spin), glm::vec3(0.0f, 0.0f, 1.0f));
+			const glm::mat4 move = glm::translate(spin, tangram[si]->move * dist);
 			const glm::mat4 tx = move;
 			glUniformMatrix4fv(txID, 1, GL_FALSE, glm::value_ptr(tx));
 
