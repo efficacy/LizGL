@@ -147,6 +147,8 @@ struct Quad : Shape {
 
 #define BROWN Colour(0.5f, 0.3f, 0.3f)
 
+const bool LOOPING = true;
+
 int main() {
 	GLFWwindow *window = setup(640, 640);
 
@@ -172,6 +174,7 @@ int main() {
 	largeTriangleRed.setSpin(0.25f); largeTriangleRed.setMove(glm::vec3(0.5, -0.5f, 0.0f));
 	largeTriangleBlue.setMove(glm::vec3(-0.5, 0.5f, 0.0f));
 
+	// loop through all objects and set up arrays and buffers
 	for (int si = 0; si < sizeof(tangram) / sizeof(Shape*); ++si) {
 		Shape* s = tangram[si];
 
@@ -208,7 +211,11 @@ int main() {
 
 		// example frame-based animation. Could easily look up rather than calculate this stuff
 		if (step > steps || step < 0) {
-			direction = -direction;
+			if (LOOPING) {
+				direction = -direction;
+			} else {
+				step -= direction; // step back to stay where we are
+			}
 		}
 		step += direction;
 
